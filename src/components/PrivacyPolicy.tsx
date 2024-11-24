@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, ArrowLeft, Lock, Eye, Server, UserCheck, Mail } from 'lucide-react';
+import { Shield, ArrowLeft, Lock, Eye, Server, UserCheck, Mail, CreditCard, LogIn } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function PrivacyPolicy() {
@@ -145,6 +145,62 @@ export default function PrivacyPolicy() {
               privacy@bidingo.com
             </a>
           </motion.div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 
+                       border border-emerald-100 flex flex-col items-start"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <CreditCard className="w-5 h-5 text-emerald-600" />
+                <h3 className="font-semibold text-emerald-800">Premium Features</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Unlock advanced features and support development with a premium subscription.
+              </p>
+              <a
+                href="https://bidingo.com/subscribe"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r 
+                         from-emerald-600 to-teal-600 text-white rounded-lg 
+                         hover:from-emerald-700 hover:to-teal-700 transition-colors mt-auto"
+              >
+                <CreditCard className="w-4 h-4" />
+                Subscribe Now
+              </a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 
+                       border border-blue-100 flex flex-col items-start"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <LogIn className="w-5 h-5 text-blue-600" />
+                <h3 className="font-semibold text-blue-800">Already a Subscriber?</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-4">
+                Access your premium features and manage your subscription settings.
+              </p>
+              <a
+                href="https://bidingo.com/account"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r 
+                         from-blue-600 to-indigo-600 text-white rounded-lg 
+                         hover:from-blue-700 hover:to-indigo-700 transition-colors mt-auto"
+              >
+                <LogIn className="w-4 h-4" />
+                Manage Subscription
+              </a>
+            </motion.div>
+          </div>
 
           <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 
                          border border-indigo-100">
