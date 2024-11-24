@@ -6,6 +6,7 @@ import JoinRoom from './components/JoinRoom';
 import WaitingRoom from './components/WaitingRoom';
 import PlayWithBots from './components/PlayWithBots';
 import GameBoard from './components/GameBoard';
+import PrivacyPolicy from './components/PrivacyPolicy';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/waiting/:roomCode" element={<WaitingRoom />} />
               <Route path="/play-with-bots" element={<PlayWithBots />} />
               <Route path="/play" element={<GameBoard />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/reset-game" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>

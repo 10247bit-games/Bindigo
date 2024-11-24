@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, UserPlus, Bot, Sparkles, Heart, Github, Coffee, Grid } from 'lucide-react';
+import { Users, UserPlus, Bot, Sparkles, Heart, Github, Coffee, Grid, Shield } from 'lucide-react';
 import MenuButton from './MenuButton';
 
 const ENV = import.meta.env.VITE_ENV || 'development';
@@ -52,6 +52,16 @@ export default function MainMenu() {
       </div>
 
       <footer className="mt-8 space-y-4">
+        <div className="flex justify-center">
+          <button
+            onClick={() => navigate('/privacy')}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-indigo-600 transition-colors"
+          >
+            <Shield className="w-4 h-4" />
+            Privacy Policy
+          </button>
+        </div>
+
         <p className="text-sm text-gray-500 text-center">Version 1.0.0</p>
         {isProd && (
           <p className="text-sm text-indigo-600 text-center">
