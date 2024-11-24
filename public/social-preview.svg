@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80" viewBox="0 0 300 80">
+  <rect width="100%" height="100%" fill="#F8F9FA"/>
+  
+  <!-- Grid icon -->
+  <g transform="translate(10, 20)">
+    <rect width="40" height="40" fill="none" stroke="#6C5CE7" stroke-width="4"/>
+    <line x1="13" y1="0" x2="13" y2="40" stroke="#6C5CE7" stroke-width="4"/>
+    <line x1="26" y1="0" x2="26" y2="40" stroke="#6C5CE7" stroke-width="4"/>
+    <line x1="0" y1="13" x2="40" y2="13" stroke="#6C5CE7" stroke-width="4"/>
+    <line x1="0" y1="26" x2="40" y2="26" stroke="#6C5CE7" stroke-width="4"/>
+  </g>
+  <!-- BIDINGO text -->
+  <text x="60" y="50" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#6C5CE7">
+    BIDINGO
+  </text>
+</svg>
