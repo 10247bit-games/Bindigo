@@ -136,13 +136,13 @@ export default function PrivacyPolicy() {
               For privacy-related questions or concerns, please contact us at:
             </p>
             <a 
-              href="mailto:privacy@bidingo.com"
+              href="mailto:privacy@bidingo.in"
               className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r 
                        from-indigo-600 to-purple-600 text-white rounded-lg 
                        hover:from-indigo-700 hover:to-purple-700 transition-colors"
             >
               <Mail className="w-4 h-4" />
-              privacy@bidingo.com
+              privacy@bidingo.in
             </a>
           </motion.div>
 
@@ -162,7 +162,7 @@ export default function PrivacyPolicy() {
                 Unlock advanced features and support development with a premium subscription.
               </p>
               <a
-                href="https://bidingo.com/subscribe"
+                href="https://bidingo.in/subscribe"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r 
@@ -189,7 +189,7 @@ export default function PrivacyPolicy() {
                 Access your premium features and manage your subscription settings.
               </p>
               <a
-                href="https://bidingo.com/account"
+                href="https://bidingo.in/account"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r 
