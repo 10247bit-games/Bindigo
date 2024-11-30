@@ -1,13 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, UserPlus, Bot, Sparkles, Heart, Github, Coffee, Grid, Shield } from 'lucide-react';
+import { getFeatureFlags } from '../config';
 import MenuButton from './MenuButton';
-
-const ENV = import.meta.env.VITE_ENV || 'development';
-const isProd = ENV === 'production';
 
 export default function MainMenu() {
   const navigate = useNavigate();
+  const features = getFeatureFlags();
 
   return (
     <div className="max-w-md mx-auto h-full flex flex-col">
@@ -21,7 +20,7 @@ export default function MainMenu() {
         </div>
 
         <div className="space-y-4">
-          {!isProd && (
+          {features.multiplayer && (
             <>
               <MenuButton 
                 icon={<UserPlus className="w-6 h-6" />}
@@ -63,7 +62,7 @@ export default function MainMenu() {
         </div>
 
         <p className="text-sm text-gray-500 text-center">Version 1.0.0</p>
-        {isProd && (
+        {!features.multiplayer && (
           <p className="text-sm text-indigo-600 text-center">
             Multiplayer features coming soon!
           </p>

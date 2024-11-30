@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="48" viewBox="0 0 220 48" style="display: block;">
+  <g fill="none" stroke="#6C63FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect width="36" height="36" x="4" y="4" rx="4"></rect>
+    <path d="M4 16h36"></path>
+    <path d="M4 28h36"></path>
+    <path d="M16 4v36"></path>
+    <path d="M28 4v36"></path>
+  </g>
+  <text x="50" y="30" fill="#6C63FF" font-size="20" font-weight="bold" font-family="Arial, sans-serif">BIDINGO</text>
+</svg>
