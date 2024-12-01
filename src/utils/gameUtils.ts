@@ -1,4 +1,4 @@
-import type { Cell, Player, BotPlayer } from '../types/game';
+import type { Cell, Player, BotPlayer } from '../types';
 
 export const generateRandomBoard = (): Cell[][] => {
   const numbers = Array.from({ length: 25 }, (_, i) => i + 1)
@@ -15,7 +15,6 @@ export const generateRandomBoard = (): Cell[][] => {
 export const checkBingoLines = (board: Cell[][], existingLines: string[]): string[] => {
   const newLines: string[] = [];
 
-  // Check rows
   board.forEach((row, i) => {
     const lineId = `row-${i}`;
     if (!existingLines.includes(lineId) && row.every(cell => cell.marked)) {
@@ -23,7 +22,6 @@ export const checkBingoLines = (board: Cell[][], existingLines: string[]): strin
     }
   });
 
-  // Check columns
   for (let col = 0; col < 5; col++) {
     const lineId = `col-${col}`;
     if (!existingLines.includes(lineId) && board.every(row => row[col].marked)) {
@@ -31,7 +29,6 @@ export const checkBingoLines = (board: Cell[][], existingLines: string[]): strin
     }
   }
 
-  // Check diagonals
   if (!existingLines.includes('diag-1') && board.every((row, i) => row[i].marked)) {
     newLines.push('diag-1');
   }
@@ -48,35 +45,36 @@ export const makeBotMove = (player: Player, difficulty: BotPlayer['difficulty'])
   
   if (unselectedCells.length === 0) return 0;
 
-  // Different strategies based on difficulty
   switch (difficulty) {
-    case 'hard':
-      // Look for potential winning moves
+    case 'hard': {
       const potentialWinningMoves = findPotentialWinningMoves(board);
       if (potentialWinningMoves.length > 0) {
         return potentialWinningMoves[Math.floor(Math.random() * potentialWinningMoves.length)];
       }
-      // fallthrough
+      return makeMediumMove(board);
+    }
 
-    case 'medium':
-      // Prioritize moves that could complete lines
-      const strategicMoves = findStrategicMoves(board);
-      if (strategicMoves.length > 0 && Math.random() > 0.3) {
-        return strategicMoves[Math.floor(Math.random() * strategicMoves.length)];
-      }
-      // fallthrough
+    case 'medium': {
+      return makeMediumMove(board);
+    }
 
     case 'easy':
     default:
-      // Random move
       return unselectedCells[Math.floor(Math.random() * unselectedCells.length)].value;
   }
+};
+
+const makeMediumMove = (board: Cell[][]): number => {
+  const strategicMoves = findStrategicMoves(board);
+  if (strategicMoves.length > 0 && Math.random() > 0.3) {
+    return strategicMoves[Math.floor(Math.random() * strategicMoves.length)];
+  }
+  return board.flat().filter(cell => !cell.marked)[0].value;
 };
 
 const findPotentialWinningMoves = (board: Cell[][]): number[] => {
   const moves: number[] = [];
 
-  // Check rows
   board.forEach(row => {
     const markedCount = row.filter(cell => cell.marked).length;
     if (markedCount === 4) {
@@ -85,7 +83,6 @@ const findPotentialWinningMoves = (board: Cell[][]): number[] => {
     }
   });
 
-  // Check columns
   for (let col = 0; col < 5; col++) {
     const column = board.map(row => row[col]);
     const markedCount = column.filter(cell => cell.marked).length;
@@ -101,19 +98,15 @@ const findPotentialWinningMoves = (board: Cell[][]): number[] => {
 const findStrategicMoves = (board: Cell[][]): number[] => {
   const moves: number[] = [];
 
-  // Look for cells that could complete multiple lines
   board.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
       if (!cell.marked) {
         let potentialLines = 0;
 
-        // Check row
         if (row.filter(c => c.marked).length >= 3) potentialLines++;
 
-        // Check column
         if (board.filter(r => r[colIndex].marked).length >= 3) potentialLines++;
 
-        // Check diagonals
         if (rowIndex === colIndex) {
           const diagonal = board.map((r, i) => r[i]);
           if (diagonal.filter(c => c.marked).length >= 3) potentialLines++;
@@ -135,4 +128,4 @@ export const SOUND_URLS = {
   mark: '/src/assets/sounds/select.wav',
   line: '/src/assets/sounds/line.wav',
   victory: '/src/assets/sounds/victory.mp3'
-};
+} as const;

@@ -1,10 +1,10 @@
+import type { Room, RoomPlayer, Profile, GameState, Player } from '@/types';
 import { mockRooms, mockProfiles, mockGames } from './mockData';
-import type { Room, RoomPlayer, Profile, GameState } from '../../types';
+import { COLORS } from '@/types/game';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const mockApi = {
-  // Room endpoints
   async createRoom(player: RoomPlayer): Promise<Room> {
     await delay(500);
     const roomId = Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -42,24 +42,6 @@ export const mockApi = {
     return room;
   },
 
-  // Profile endpoints
-  async getProfile(userId: string): Promise<Profile> {
-    await delay(300);
-    const profile = mockProfiles[userId];
-    if (!profile) throw new Error('Profile not found');
-    return profile;
-  },
-
-  async updateProfile(userId: string, data: Partial<Profile>): Promise<Profile> {
-    await delay(500);
-    const profile = mockProfiles[userId];
-    if (!profile) throw new Error('Profile not found');
-    const updated = { ...profile, ...data, updatedAt: Date.now() };
-    mockProfiles[userId] = updated;
-    return updated;
-  },
-
-  // Game endpoints
   async createGame(roomId: string, players: RoomPlayer[]): Promise<GameState> {
     await delay(500);
     const gameId = `game-${Date.now()}`;
@@ -68,9 +50,11 @@ export const mockApi = {
       roomId,
       status: 'active',
       currentPlayer: players[0].id,
-      players: players.map(p => ({
-        id: p.id,
-        name: p.name,
+      players: players.map((player, index): Player => ({
+        id: player.id,
+        name: player.name,
+        isBot: false,
+        color: COLORS[index % COLORS.length],
         board: Array(5).fill(null).map(() => 
           Array(5).fill(null).map(() => ({
             value: Math.floor(Math.random() * 25) + 1,
@@ -107,11 +91,10 @@ export const mockApi = {
       throw new Error('Not your turn');
     }
     
-    // Update game state with the move
-    game.players = game.players.map(p => ({
-      ...p,
-      board: p.board.map(row => 
-        row.map(cell => 
+    game.players = game.players.map((player) => ({
+      ...player,
+      board: player.board.map((row) => 
+        row.map((cell) => 
           cell.value === number ? { ...cell, marked: true } : cell
         )
       )
@@ -123,8 +106,7 @@ export const mockApi = {
       timestamp: Date.now()
     };
     
-    // Update current player
-    const currentPlayerIndex = game.players.findIndex(p => p.id === playerId);
+    const currentPlayerIndex = game.players.findIndex((player) => player.id === playerId);
     game.currentPlayer = game.players[(currentPlayerIndex + 1) % game.players.length].id;
     
     return game;

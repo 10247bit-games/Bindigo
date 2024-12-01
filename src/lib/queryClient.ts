@@ -1,32 +1,16 @@
 import { QueryClient } from '@tanstack/react-query';
+import { getConfig } from '../config/modes';
 
-const ENV = import.meta.env.VITE_ENV || 'development';
+const config = getConfig();
 
-const config = {
-  development: {
-    defaultOptions: {
-      queries: {
-        staleTime: 0,
-        gcTime: 1000 * 60
-      }
-    }
-  },
-  test: {
-    defaultOptions: {
-      queries: {
-        staleTime: 0,
-        gcTime: 1000 * 60
-      }
-    }
-  },
-  production: {
-    defaultOptions: {
-      queries: {
-        staleTime: 1000 * 60,
-        gcTime: 1000 * 60 * 5
-      }
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: config.query.staleTime,
+      gcTime: config.query.gcTime,
+      retry: config.api.retries,
+      retryDelay: config.query.retryDelay,
+      refetchOnWindowFocus: config.query.refetchOnWindowFocus
     }
   }
-}[ENV];
-
-export const queryClient = new QueryClient(config);
+});

@@ -1,10 +1,19 @@
 import { io, Socket } from 'socket.io-client';
-import { RoomEvents, GameEvents, ChatEvents } from '../types/events';
+import type { RoomEvents, GameEvents, ChatEvents } from '../types/events';
 
-type ServerEvents = RoomEvents & GameEvents & ChatEvents;
+interface ServerToClientEvents extends RoomEvents, GameEvents, ChatEvents {
+  connect: () => void;
+  disconnect: () => void;
+  connect_error: (error: Error) => void;
+}
+
+interface ClientToServerEvents {
+  'room:join': (data: { roomCode: string }) => void;
+  'room:leave': (data: { roomCode: string }) => void;
+}
 
 class SocketClient {
-  private socket: Socket<ServerEvents> | null = null;
+  private socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 
@@ -56,21 +65,21 @@ class SocketClient {
     event: K,
     callback: (payload: RoomEvents[K]) => void
   ) {
-    this.socket?.on(event, callback);
+    this.socket?.on(event, callback as any);
   }
 
   onGameEvent<K extends keyof GameEvents>(
     event: K,
     callback: (payload: GameEvents[K]) => void
   ) {
-    this.socket?.on(event, callback);
+    this.socket?.on(event, callback as any);
   }
 
   onChatEvent<K extends keyof ChatEvents>(
     event: K,
     callback: (payload: ChatEvents[K]) => void
   ) {
-    this.socket?.on(event, callback);
+    this.socket?.on(event, callback as any);
   }
 
   disconnect() {

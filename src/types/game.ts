@@ -27,7 +27,21 @@ export interface BotPlayer {
   ready: boolean;
 }
 
-export const COLORS = ['#4F46E5', '#059669', '#DC2626', '#D97706'];
+export interface GameState {
+  id: string;
+  roomId: string;
+  status: 'active' | 'completed';
+  currentPlayer: string;
+  players: Player[];
+  lastMove: {
+    playerId: string;
+    number: number;
+    timestamp: number;
+  } | null;
+  startedAt: number;
+}
+
+export const COLORS = ['#4F46E5', '#059669', '#DC2626', '#D97706'] as const;
 
 export const BOT_MESSAGES = [
   "Good move!",
@@ -40,4 +54,4 @@ export const BOT_MESSAGES = [
   "BINGO incoming!",
   "Let me focus...",
   "Nice one!"
-];
+] as const;

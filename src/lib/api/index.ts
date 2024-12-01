@@ -1,8 +1,12 @@
 import axios from 'axios';
+import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { API_CONFIG } from './config';
 import { mockApi } from './mockApi';
+import { getConfig } from '@/config/modes';
 
-const api = API_CONFIG.useMocks ? mockApi : axios.create({
+const config = getConfig();
+
+const axiosInstance = axios.create({
   baseURL: API_CONFIG.baseURL,
   timeout: API_CONFIG.timeout,
   headers: {
@@ -10,24 +14,22 @@ const api = API_CONFIG.useMocks ? mockApi : axios.create({
   }
 });
 
-// Add request interceptor for authentication
-if (!API_CONFIG.useMocks) {
-  api.interceptors.request.use(
-    (config) => {
+if (!config.features.multiplayer) {
+  axiosInstance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
       const token = localStorage.getItem('token');
-      if (token) {
+      if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
     },
-    (error) => Promise.reject(error)
+    (error: unknown) => Promise.reject(error)
   );
 
-  // Add response interceptor for error handling
-  api.interceptors.response.use(
+  axiosInstance.interceptors.response.use(
     (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
+    (error: unknown) => {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
         localStorage.removeItem('token');
         window.location.href = '/';
       }
@@ -35,5 +37,7 @@ if (!API_CONFIG.useMocks) {
     }
   );
 }
+
+const api: AxiosInstance | typeof mockApi = config.features.multiplayer ? mockApi : axiosInstance;
 
 export default api;
