@@ -1,19 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSwipeable } from 'react-swipeable';
 import { Target, Clock, Hash } from 'lucide-react';
-
-interface Player {
-  id: string;
-  name: string;
-  color: string;
-  dots: number;
-  stats: {
-    numbersMarked: number;
-    linesCompleted: number;
-    avgTimePerMove: number;
-  };
-}
+import type { Player } from '@/types';
 
 interface PlayerSummaryWidgetProps {
   players: Player[];
@@ -22,22 +11,28 @@ interface PlayerSummaryWidgetProps {
   lastPlayedNumbers?: Record<string, number>;
 }
 
-export default function PlayerSummaryWidget({ 
-  players, 
-  currentPlayerId, 
+export default function PlayerSummaryWidget({
+  players,
+  currentPlayerId,
   timeLeft,
-  lastPlayedNumbers = {} 
+  lastPlayedNumbers = {}
 }: PlayerSummaryWidgetProps) {
   const [view, setView] = useState<'overview' | 'stats'>('overview');
   const [selectedPlayerIndex, setSelectedPlayerIndex] = useState(0);
 
-  const getInitials = (name: string) => {
-    return name.split(' ')
-      .filter(word => word.length > 0)
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
+  const handleViewChange = (direction: 'next' | 'prev') => {
+    setView(prev => prev === 'overview' ? 'stats' : 'overview');
+  };
+
+  const handlePlayerChange = (direction: 'next' | 'prev') => {
+    if (view === 'stats') {
+      setSelectedPlayerIndex(prev => {
+        const newIndex = direction === 'next'
+          ? (prev + 1) % players.length
+          : (prev - 1 + players.length) % players.length;
+        return newIndex;
+      });
+    }
   };
 
   const handlers = useSwipeable({
@@ -45,42 +40,8 @@ export default function PlayerSummaryWidget({
     onSwipedRight: () => handleViewChange('prev'),
     onSwipedUp: () => handlePlayerChange('next'),
     onSwipedDown: () => handlePlayerChange('prev'),
-    preventDefaultTouchmoveEvent: true,
     trackMouse: true
   });
-
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') handleViewChange('prev');
-      if (e.key === 'ArrowRight') handleViewChange('next');
-      if (e.key === 'ArrowUp') handlePlayerChange('prev');
-      if (e.key === 'ArrowDown') handlePlayerChange('next');
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [view]);
-
-  const handleViewChange = (direction: 'next' | 'prev') => {
-    const views: ('overview' | 'stats')[] = ['overview', 'stats'];
-    const currentIndex = views.indexOf(view);
-    const newIndex = direction === 'next' 
-      ? (currentIndex + 1) % views.length
-      : (currentIndex - 1 + views.length) % views.length;
-    setView(views[newIndex]);
-  };
-
-  const handlePlayerChange = (direction: 'next' | 'prev') => {
-    if (view === 'overview') return;
-    setSelectedPlayerIndex(prev => {
-      const newIndex = direction === 'next'
-        ? (prev + 1) % players.length
-        : (prev - 1 + players.length) % players.length;
-      return newIndex;
-    });
-  };
-
-  const currentPlayer = players.find(p => p.id === currentPlayerId);
 
   const renderOverview = () => (
     <div className="flex items-center justify-between px-3 w-full">
@@ -101,7 +62,7 @@ export default function PlayerSummaryWidget({
             `}
             style={{ 
               backgroundColor: player.color,
-              ringColor: player.color 
+              border: player.id === currentPlayerId ? `2px solid ${player.color}` : undefined
             }}
             onClick={() => {
               setSelectedPlayerIndex(players.indexOf(player));
@@ -109,21 +70,19 @@ export default function PlayerSummaryWidget({
             }}
           >
             <span className="text-white text-lg font-bold">
-              {getInitials(player.name)}
+              {player.name.slice(0, 2).toUpperCase()}
             </span>
           </motion.div>
 
-          {/* Dots Badge */}
           {player.dots > 0 && (
             <motion.div 
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="absolute -right-1 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full 
-                        flex items-center justify-center text-sm font-bold
-                        shadow-md border-2"
+                        flex items-center justify-center text-sm font-bold shadow-md"
               style={{ 
                 color: player.color,
-                borderColor: player.color 
+                border: `2px solid ${player.color}`
               }}
             >
               {player.dots}
@@ -132,12 +91,11 @@ export default function PlayerSummaryWidget({
         </motion.div>
       ))}
 
-      {/* Timer */}
-      {timeLeft !== undefined && currentPlayer && (
+      {timeLeft !== undefined && (
         <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 
                       flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-md">
-          <Clock className="w-4 h-4" style={{ color: currentPlayer.color }} />
-          <span className="font-mono font-medium" style={{ color: currentPlayer.color }}>
+          <Clock className="w-4 h-4" style={{ color: players[0].color }} />
+          <span className="font-mono font-medium" style={{ color: players[0].color }}>
             {timeLeft}s
           </span>
         </div>
@@ -163,7 +121,7 @@ export default function PlayerSummaryWidget({
           style={{ backgroundColor: player.color }}
         >
           <span className="text-white text-lg font-bold">
-            {getInitials(player.name)}
+            {player.name.slice(0, 2).toUpperCase()}
           </span>
         </div>
 
@@ -220,8 +178,7 @@ export default function PlayerSummaryWidget({
             transition={{ duration: 0.15 }}
             className="absolute inset-0 flex items-center"
           >
-            {view === 'overview' && renderOverview()}
-            {view === 'stats' && renderStats()}
+            {view === 'overview' ? renderOverview() : renderStats()}
           </motion.div>
         </AnimatePresence>
       </div>

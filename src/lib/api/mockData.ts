@@ -1,4 +1,5 @@
-import type { Room, RoomPlayer, Profile, GameState } from '../../types';
+import type { Room, RoomPlayer, Profile, GameState } from '@/types';
+import { COLORS } from '@/types/game';
 
 export const mockRooms: Record<string, Room> = {
   'DEMO1': {
@@ -57,6 +58,8 @@ export const mockGames: Record<string, GameState> = {
       {
         id: 'player1',
         name: 'Demo Player',
+        isBot: false,
+        color: COLORS[0],
         board: Array(5).fill(null).map(() => 
           Array(5).fill(null).map(() => ({
             value: Math.floor(Math.random() * 25) + 1,

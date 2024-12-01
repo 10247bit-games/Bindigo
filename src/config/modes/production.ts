@@ -5,7 +5,7 @@ export const productionConfig = {
     retries: 3
   },
   features: {
-    multiplayer: true,
+    multiplayer: false,
     botGame: true,
     analytics: true
   },

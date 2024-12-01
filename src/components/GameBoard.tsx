@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Grid, BarChart2, Volume2, Users, Pause, MessageSquare } from 'lucide-react';
+import { Grid, BarChart2, Users, Pause, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useSound from 'use-sound';
-import { type BotPlayer, type Player, COLORS } from '../types/game';
-import { generateRandomBoard, SOUND_URLS } from '../utils/gameUtils';
+import type { Cell, BotPlayer, Player } from '@/types';
+import { generateRandomBoard, SOUND_URLS, checkBingoLines } from '@/utils/gameUtils';
+import { COLORS } from '@/types/game';
 import PlayerCard from './PlayerCard';
 import BingoHeader from './BingoHeader';
 import ChatBox from './ChatBox';
@@ -19,14 +20,16 @@ import PauseOverlay from './PauseOverlay';
 export default function GameBoard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { playerName, bots, isMultiplayer, skipRules } = location.state || {};
+  const { playerName, bots, skipRules } = location.state || {};
   const lastCalledNumberRef = useRef<number | null>(null);
   const victoryPlayedRef = useRef<boolean>(false);
 
   const [players, setPlayers] = useState<Player[]>(() => {
+    if (!playerName) return [];
+
     const playerList: Player[] = [{
       id: '1',
-      name: playerName || 'Player 1',
+      name: playerName,
       isBot: false,
       dots: 0,
       color: COLORS[0],
@@ -68,6 +71,16 @@ export default function GameBoard() {
   const [showRules, setShowRules] = useState<boolean>(!skipRules);
   const [autoSelect, setAutoSelect] = useState<boolean>(true);
   const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  // Redirect if no player name
+  useEffect(() => {
+    if (!playerName) {
+      navigate('/', { replace: true });
+    }
+  }, [playerName, navigate]);
+
+  // Return null while checking player name to prevent flash
+  if (!playerName || players.length === 0) return null;
 
   const [playMarkSound] = useSound(SOUND_URLS.mark, { soundEnabled: isSoundEnabled, volume });
   const [playLineSound] = useSound(SOUND_URLS.line, { soundEnabled: isSoundEnabled, volume });
@@ -221,33 +234,6 @@ export default function GameBoard() {
     });
 
     setTimeout(handleTurnEnd, 1000);
-  };
-
-  const checkBingoLines = (boardState: Cell[][], existingLines: string[]): string[] => {
-    const newLines: string[] = [];
-
-    boardState.forEach((row, i) => {
-      const lineId = `row-${i}`;
-      if (!existingLines.includes(lineId) && row.every(cell => cell.marked)) {
-        newLines.push(lineId);
-      }
-    });
-
-    for (let col = 0; col < 5; col++) {
-      const lineId = `col-${col}`;
-      if (!existingLines.includes(lineId) && boardState.every(row => row[col].marked)) {
-        newLines.push(lineId);
-      }
-    }
-
-    if (!existingLines.includes('diag-1') && boardState.every((row, i) => row[i].marked)) {
-      newLines.push('diag-1');
-    }
-    if (!existingLines.includes('diag-2') && boardState.every((row, i) => row[4 - i].marked)) {
-      newLines.push('diag-2');
-    }
-
-    return newLines;
   };
 
   const handleGameStart = (autoSelectEnabled: boolean) => {
